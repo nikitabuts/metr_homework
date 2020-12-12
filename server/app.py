@@ -10,6 +10,8 @@ from werkzeug.utils import secure_filename
 from typing import Dict
 import os
 
+from math import ceil
+
 import numpy as np
 
 class ChiApp(flask.Flask):
@@ -63,7 +65,7 @@ class ChiApp(flask.Flask):
                     'Status': 'Error',
                     'Answer': "File reading went wrong, try check your file's data"
                 })
-            self.num_parts = int(1 + 3.3 * np.log10(data.shape[0]))
+            self.num_parts = ceil(1 + 3.3 * np.log10(data.shape[0]))
             self.checker = ChiSquaredNormalCheck(
                 conf_level=float(form.conf_level.data),
                 num_parts=self.num_parts
