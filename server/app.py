@@ -19,6 +19,9 @@ class ChiApp(flask.Flask):
         flask_cors.CORS(self)
 
         self.settings: Dict[str, float] = settings
+        self.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
+
+        self.num_parts = 0
 
         self.checker = ChiSquaredNormalCheck(
             conf_level=self.settings['conf_level'],
@@ -60,12 +63,12 @@ class ChiApp(flask.Flask):
                     'Status': 'Error',
                     'Answer': "File reading went wrong, try check your file's data"
                 })
+            self.num_parts = int(1 + 3.3 * np.log10(data.shape[0]))
             self.checker = ChiSquaredNormalCheck(
                 conf_level=float(form.conf_level.data),
-                num_parts=int(form.num_parts.data)
+                num_parts=self.num_parts
             )
             res, h, our_prob, normal_prob, s_sq, X = self.checker.compute(data)
-            import json
             return flask.jsonify({
                 'Input values': str(
                     ', '.join(
@@ -76,9 +79,7 @@ class ChiApp(flask.Flask):
                         )
                     )
                 ),
-                'Status': 'OK',
-                'Answer': 'Success',
-                'Is normal?': 'No' if not res else 'Yes',
+                'n_intervals': str(self.num_parts),
                 'h': str(h),
                 's_sq': str(s_sq),
                 'X': str(X),
@@ -100,6 +101,9 @@ class ChiApp(flask.Flask):
                         )
                     )
                 ),
+                'Status': 'OK',
+                'Answer': 'Success',
+                'Is normal?': 'No' if not res else 'Yes',
             })
         return flask.render_template('base.html', form=form)
 

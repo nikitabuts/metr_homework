@@ -11,13 +11,8 @@ def filename_check(sub: str='.txt'):
 
 class Form(FlaskForm):
     file = FileField(validators=filename_check(".txt"))
-    num_parts = IntegerField(
-        validators=[
-            NumberRange(min=2, message='Значение должно быть больше 1')
-        ]
-    )
     conf_level = FloatField(
         validators=[
-            NumberRange(min=0.0000001, message='Значение должно быть больше 0.0000001')
+            NumberRange(min=0.00000000001, max=0.9999999999999, message='Значение должно быть больше 0.00000000001 и меньше 0.9999999999999')
         ]
     )
