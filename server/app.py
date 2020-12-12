@@ -12,9 +12,6 @@ import os
 
 import numpy as np
 
-env = os.environ.get("APP_ENV", "dev")
-print(f"Starting application in {env} mode")
-
 class ChiApp(flask.Flask):
 
     def __init__(self, *args, **kwargs):
@@ -105,6 +102,17 @@ class ChiApp(flask.Flask):
                 ),
             })
         return flask.render_template('base.html', form=form)
+
+env = os.environ.get("APP_ENV", "dev")
+print(f"Starting application in {env} mode")
+app = ChiApp('ChiApp', template_folder=settings['template_folder'])
+app.config.from_object(f"server.{env}_settings")
+app.config.update(
+    dict(
+        SECRET_KEY="powerful_secretkey",
+        WTF_CSRF_SECRET_KEY="a csrf secret key"
+    )
+)
 
 
 
